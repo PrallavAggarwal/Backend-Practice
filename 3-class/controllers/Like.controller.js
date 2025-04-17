@@ -7,18 +7,18 @@ exports.likepost = async (req, res) => {
         const {user, post, like, unlike} = req.body
         //validation
         if(unlike & like){
-            return res.status().json({
+            return res.status(400).json({
                 success:false,
                 message:"You can not like and unlike at same time."
             })
         }
         if(!user){ 
-            return res.status().json({
+            return res.status(400).json({
                 message:"no anonymous likes allowed please mention user name.",
             })
         }
         if(!post){
-            return res.status().json({
+            return res.status(400).json({
                 message:"please mention post which you want to like."
             })
         }
@@ -30,10 +30,16 @@ exports.likepost = async (req, res) => {
             unlike
         })
         //adding details to post schema
-        const updatedPost = await Post.findByIdAndUpdate(post, {$push : {likes : updatedLike._id}})
+        let updatedPost
+        if(like){
+            updatedPost = await Post.findByIdAndUpdate(post, {$push : {likes : updatedLike._id}}, {new:true})
+        }
+        if(unlike){
+            updatedPost = await Post.findByIdAndUpdate(post, {$push : {unlikes : updatedLike._id}}, {new:true})
+        }
         console.log(`updated post after like/unlike : ${updatedPost}`)
 
-        return res.status().json({
+        return res.status(200).json({
             success:true,
             message:"like/unlike added",
             updatedPost,
@@ -42,7 +48,7 @@ exports.likepost = async (req, res) => {
 
     } catch (error) {
         console.log(`error while liking/unliking post : ${error.message}`)
-        return res.status().json({
+        return res.status(400).json({
             success:false,
             message: "can not update like/unlike some error occured.",
             error: error
@@ -59,7 +65,7 @@ exports.getlikepost = async (req, res) => {
         console.log(`response of liked post : ${likedpost}`)
     } catch (error) {
         console.log(`error while fetching liked post : ${error.message}`)
-        return res.status().json({
+        return res.status(400).json({
             success:false,
             message: "error while fetching liked post.",
             error: error

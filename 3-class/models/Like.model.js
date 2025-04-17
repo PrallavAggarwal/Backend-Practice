@@ -21,3 +21,5 @@ const LikeSchema = new mongoose.Schema({
         default:false,
     }
 })
+
+module.exports = mongoose.model("Like", LikeSchema)

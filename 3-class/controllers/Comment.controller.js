@@ -7,17 +7,17 @@ exports.createcomment = async (req, res) => {
         const {user, body, post} = req.body
         //validations
         if(!user){ 
-            return res.status().json({
+            return res.status(400).json({
                 message:"no anonymous comments allowed please mention user name.",
             })
         }
         if(!body){
-            return res.status().json({
+            return res.status(400).json({
                 message:"please write something to comment. No empty comments allowed."
             })
         }
         if(!post){
-            return res.status().json({
+            return res.status(400).json({
                 message:"please mention post on which you want to comment."
             })
         }
@@ -33,14 +33,14 @@ exports.createcomment = async (req, res) => {
         console.log("post after adding comment : ", updatedPost)
 
         //returning successful response
-        return res.status().json({
+        return res.status(200).json({
             success: true,
             updatedPost: updatedPost,
             commentStored: commentStored,
         })
     } catch (error) {
         console.log(`error while making comment : ${error.message}`)
-        return res.status().json({
+        return res.status(400).json({
             success:false,
             message: "comment not made successsfully some error occured."
         })
